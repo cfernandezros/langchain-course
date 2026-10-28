@@ -4,8 +4,11 @@ from langchain.tools import tool
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
 from langchain_ollama import ChatOllama
+from tavily import TavilyClient
 
 load_dotenv()
+
+tavily = TavilyClient()
 
 @tool
 def search(query: str) -> str:
@@ -18,15 +21,15 @@ def search(query: str) -> str:
         The search results.
     """
     print(f"Searching for: {query}")
-    return "Paris, France: 14°C, light rain, humidity 82%, wind 15 km/h."
+    return tavily.search(query=query)
 
-llm = ChatOllama(model="qwen3.5:2b ", temperature=0)
-# llm = ChatOpenAI(model_name="gpt-6-luna")
+# llm = ChatOllama(model="qwen3.5:2b ", temperature=0)
+llm = ChatOpenAI(model_name="gpt-6-luna")
 tools = [search]
 agent = create_agent(model=llm, tools=tools)
 
 def main():
-    result = agent.invoke({"messages": HumanMessage(content="What is the wheather in Paris, France?")})
+    result = agent.invoke({"messages": HumanMessage(content="Search for 3 job openings for ai eningeering roles using langchain in Madrid and list their details")})
     print(result)
 
 
